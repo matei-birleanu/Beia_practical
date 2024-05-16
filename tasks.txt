@@ -1,0 +1,7 @@
+--de documentat intr-un Gdoc in engleza si postat cod in Github pentru conectare device IoT (raspberry pi, esp, pycom, arduino, libelium, galileo, android, etc) prin MQTT la baza de date, DA
+--stocare pe blockchain (Ethereum, IOTA, Hyperledger, etc.), DA
+--orchestrare servicii cu Arrowhead folosind docker si vizualizare intr-o aplicatie mobila, DA
+--utilizare Node-Red pentru prelucrare date, 
+--vizualizare date in Grafana, setare notificari in Grafana, 
+--configurare stocare locala date intr-un folder cu nume candidat si auto-start resincronizare date locale cu cloud in caz de pana retea curent electric sau retea date, 
+--interogare date prin chatbot sau voicebot

@@ -1,0 +1,107 @@
+/*
+ * Credits: https://www.plusivo.com
+ *
+ * Lesson 4: Motor Control
+ * 
+ * In this lesson, you will learn how to control a DC motor.
+ * 
+ * Make sure you have connected the components correctly according 
+ * to the guide.
+ *
+ * More information about the connection can be found in the guide.
+ * 
+ */
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
+ 
+#define DHTPIN 5     // Pinul digital la care este conectat senzorul DHT 
+#define DHTTYPE    DHT11     
+//variabile motorspeed retine pinul la care este legat motorul
+const int motorspeed_pin = D5;
+ 
+//variabile pentru a controla directiile de miscare ale motorului
+const int DIRA = D6;
+const int DIRB = D7;
+ 
+DHT_Unified dht(DHTPIN, DHTTYPE);
+uint32_t delayMS;
+void setup() 
+{
+  Serial.begin(9600);
+  // Initializez senzorul DHT
+  dht.begin();
+  Serial.println(F("DHTxx Unified Sensor Example"));
+  // printez datele livrate de senzor
+  sensor_t sensor;
+  dht.temperature().getSensor(&sensor);
+  Serial.println(F("------------------------------------"));
+  Serial.println(F("Temperature Sensor"));
+  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
+  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
+  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
+  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("°C"));
+  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("°C"));
+  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("°C"));
+  Serial.println(F("------------------------------------"));
+  dht.humidity().getSensor(&sensor);
+  Serial.println(F("Humidity Sensor"));
+  Serial.print  (F("Sensor Type: ")); Serial.println(sensor.name);
+  Serial.print  (F("Driver Ver:  ")); Serial.println(sensor.version);
+  Serial.print  (F("Unique ID:   ")); Serial.println(sensor.sensor_id);
+  Serial.print  (F("Max Value:   ")); Serial.print(sensor.max_value); Serial.println(F("%"));
+  Serial.print  (F("Min Value:   ")); Serial.print(sensor.min_value); Serial.println(F("%"));
+  Serial.print  (F("Resolution:  ")); Serial.print(sensor.resolution); Serial.println(F("%"));
+  Serial.println(F("------------------------------------"));
+  // delay intre citirile senzorului
+  delayMS = sensor.min_delay / 1000;
+  //initializez variabile motorului dupa fiecare citire si de asemenea cele doua axe de directie
+  pinMode(motorspeed_pin, OUTPUT);
+  pinMode(DIRA, OUTPUT);
+  pinMode(DIRB, OUTPUT);
+ 
+}
+ 
+//functie care opreste motorul
+void turnOff()
+{
+  //setez viteza motorului pe 0
+  digitalWrite(motorspeed_pin, LOW);
+  digitalWrite(DIRA, LOW);
+  digitalWrite(DIRB, LOW);
+  delay(delayOff);
+}
+ 
+void loop() 
+{  delay(delayMS);
+  // event este variabila de tip senzor structura avand in ea 
+  // campurile umiditate si temperatura
+  sensors_event_t event;
+  dht.temperature().getEvent(&event);
+  if (isnan(event.temperature)) {
+    Serial.println(F("Error reading temperature!"));
+  }
+  else {
+    Serial.print(F("Temperature: "));
+    Serial.print(event.temperature);  
+    Serial.println(F("°C"));
+    //verific daca temperatura inregistrata este peste 28 grade celsius
+    if(event.temperature > 28) {
+      digitalWrite(motorspeed_pin, HIGH);
+      //pornesc motorul intr o directie
+      digitalWrite(DIRA, HIGH);
+      digitalWrite(DIRB, LOW);
+      } else 
+    turnOff();
+  }
+  dht.humidity().getEvent(&event);
+  if (isnan(event.relative_humidity)) {
+    Serial.println(F("Error reading humidity!"));
+  }
+  else {
+    Serial.print(F("Humidity: "));
+    Serial.print(event.relative_humidity);
+    Serial.println(F("%"));
+  }
+ 
+}
